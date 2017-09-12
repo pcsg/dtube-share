@@ -57,13 +57,17 @@
 }
 
 .dtube-share-embed {
-    margin: 20% auto 0;
+    margin: 10% auto 0;
     max-width: 600px;
     width: calc(100% - 20px);
 }
 
 .dtube-share-embedTitle {
+    font-weight: bold;
+}
 
+.dtube-share-embedDesc {
+    padding: 10px 0;
 }
 
 .dtube-share-embedPre {
@@ -72,6 +76,16 @@
     height: 200px;
     padding: 10px;
     width: 100%;
+}
+
+.dtube-share-embedPre-setting {
+    float: left;
+    width: 50%;
+}
+
+.dtube-share-embedPre-setting input {
+    float: left;
+    margin-right: 10px;
 }
 
 /** Effects

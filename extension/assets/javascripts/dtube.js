@@ -17,6 +17,8 @@ var DTubeShare = {
         this.App.classList.add('dtube-share');
         this.App.appendChild(this.create());
 
+        this.refreshCode();
+
         var Icon = document.createElement('span');
         Icon.classList.add('dtube-share-close-icon');
 
@@ -93,10 +95,24 @@ var DTubeShare = {
         Title.textContent = 'Embed Code';
         Container.appendChild(Title);
 
+        var Desc = document.createElement('p');
+        Desc.classList.add('dtube-share-embedDesc');
+        Desc.textContent = 'Post this code into your website, wordpress, drupal, quiqqer or every other content management system';
+        Container.appendChild(Desc);
+
         this.Pre = document.createElement('pre');
         this.Pre.classList.add('dtube-share-embedPre');
-        this.Pre.textContent = this.getHtmlFromNode(this.Active);
         Container.appendChild(this.Pre);
+
+        var WithControls = this.$createSetting('With controls', 'controls');
+        WithControls.querySelector('input').addEventListener('change', this.refreshCode.bind(this));
+        WithControls.querySelector('input').checked = true;
+        Container.appendChild(WithControls);
+
+        var Autoplay = this.$createSetting('Autoplay', 'autoplay');
+        Autoplay.querySelector('input').addEventListener('change', this.refreshCode.bind(this));
+        Autoplay.querySelector('input').checked = true;
+        Container.appendChild(Autoplay);
 
         Node.appendChild(Container);
 
@@ -104,26 +120,74 @@ var DTubeShare = {
     },
 
     /**
-     * Return the video html
      *
-     * @param {HTMLVideoElement} Video
+     * @param text
+     * @param name
+     * @param [type]
+     * @return {Element}
+     */
+    $createSetting: function (text, name, type) {
+        type = type || 'checkbox';
+
+        var Settings = document.createElement('label');
+        Settings.classList.add('dtube-share-embedPre-setting');
+
+        var Input  = document.createElement('input');
+        Input.name = name;
+        Input.type = type;
+
+
+        var Text         = document.createElement('div');
+        Text.textContent = text;
+
+        Settings.appendChild(Input);
+        Settings.appendChild(Text);
+
+        return Settings;
+    },
+
+    /**
+     * Display the video code
+     *
+     * @param {HTMLVideoElement} [Video]
      * @return {string}
      */
-    getHtmlFromNode: function (Video) {
-        var html = '';
+    refreshCode: function (Video) {
+        var html     = '',
+            autoplay = true,
+            controls = true;
+
+        if (typeof Video === 'object' || typeof Video === 'undefined') {
+            Video = this.Active;
+        }
+
+        if (this.App.querySelector('[name="controls"]').checked === false) {
+            controls = false;
+        }
+
+        if (this.App.querySelector('[name="autoplay"]').checked === false) {
+            autoplay = false;
+        }
 
         html = html + '<video' + "\n";
         html = html + ' src="' + Video.getAttribute('src') + '"' + "\n";
         html = html + ' poster="' + Video.getAttribute('poster') + '"' + "\n";
-        html = html + ' controls' + "\n";
-        html = html + ' autoplay' + "\n";
+
+        if (autoplay) {
+            html = html + ' autoplay' + "\n";
+        }
+
+        if (controls) {
+            html = html + ' controls' + "\n";
+        }
+
         html = html + '></video>';
 
-        return html;
+        this.Pre.textContent = html;
     }
 };
 
-window.addEventListener("DTUBE_SHARE", function (event) {
+window.addEventListener("DTUBE_SHARE", function () {
     var Target = document.activeElement;
 
     if (Target.nodeName !== 'VIDEO') {
